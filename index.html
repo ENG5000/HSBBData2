@@ -66,6 +66,7 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--fo
 .rp-badge { display: inline-block; vertical-align: middle; margin-left: 6px; padding: 1px 8px; border-radius: 999px; border: 1px solid #b7791f; color: #b7791f; font-family: var(--font); font-size: 12px; font-weight: 600; }
 .rp-note-lead { font-size: 15px; color: var(--fg); }
 .rp-note-lead b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.rp-sw-att { background: var(--grid); outline: 1px solid var(--axis); outline-offset: -1px; }
 .rp-h3 { margin: 8px 0 0; font-size: 15px; font-weight: 600; color: var(--fg); }
 .rp-tablewrap { overflow-x: auto; }
 .rp-table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
@@ -142,7 +143,13 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--fo
     <p class="rp-note">With 20 or more assists, Riviera Prep went <b id="ast20-hi">—</b>. With fewer, <b id="ast20-lo">—</b>. The dashed line marks 20 assists.</p>
     <h3 class="rp-h3">Three-point shooting in wins and losses</h3>
     <div class="rp-chart" id="tp-chart" style="min-height:220px"></div>
+    <h3 class="rp-h3">Same number of threes, more of them made</h3>
+    <div class="rp-keys"><span class="rp-key"><i class="rp-sw rp-sw-att"></i>Attempted</span><span class="rp-key"><i class="rp-sw rp-sw-1"></i>Made in wins</span><span class="rp-key"><i class="rp-sw rp-sw-2"></i>Made in losses</span></div>
+    <div class="rp-chart" id="tpm-chart" style="min-height:90px"></div>
     <p class="rp-note">It took about the same number of threes either way (<b id="tpa-w">—</b> a game in wins, <b id="tpa-l">—</b> in losses). The difference was making them.</p>
+    <h3 class="rp-h3">The playoff run: more passing, same shooting</h3>
+    <div class="rp-keys"><span class="rp-key"><i class="rp-sw rp-sw-2"></i>Regular season</span><span class="rp-key"><i class="rp-sw rp-sw-1"></i>Playoffs</span></div>
+    <div class="rp-chart" id="po-chart" style="min-height:200px"></div>
     <p class="rp-note">In <span id="po-n">—</span> playoff games, Riviera Prep averaged <b id="po-ast">—</b> assists and shot <b id="po-tp">—</b> from three.</p>
     <p class="rp-note">Shooting figures cover <span id="sh-n">—</span> of <span id="sh-all">—</span> games; MaxPreps has no shooting line for the rest. Source: MaxPreps 2025-26 team stats.</p>
   </section>
@@ -195,7 +202,8 @@ const paintSummary = [['Wins', 'W'], ['Losses', 'L']].map(([outcome, code]) => {
 
 const shWith = SHOOT.filter((g) => has(g.tpa));
 const shootBy = (keep) => { const all = SHOOT.filter(keep), s = shWith.filter(keep); const tpm = s.reduce((a, g) => a + g.tpm, 0), tpa = s.reduce((a, g) => a + g.tpa, 0); return { ast: all.reduce((a, g) => a + g.ast, 0) / all.length, pct: tpm / tpa, tpa: tpa / s.length, n: all.length }; };
-const shW = shootBy((g) => g.result === 'W'), shL = shootBy((g) => g.result === 'L'), shPO = shootBy((g) => g.phase === 'Playoffs');
+const shW = shootBy((g) => g.result === 'W'), shL = shootBy((g) => g.result === 'L'), shPO = shootBy((g) => g.phase === 'Playoffs'), shRS = shootBy((g) => g.phase === 'Regular season');
+const tpmPer = (keep) => { const s = shWith.filter(keep); return s.reduce((a, g) => a + g.tpm, 0) / s.length; };
 const rec = (rows) => { const w = rows.filter((g) => g.result === 'W').length; return `${w}–${rows.length - w}`; };
 const pct1 = (v) => `${(v * 100).toFixed(1)}%`;
 
@@ -369,7 +377,47 @@ function drawThrees() {
   svg.append('line').attr('x1', m.l).attr('x2', x.range()[1]).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--axis)');
 }
 
-function drawAll() { drawBattle(); drawMargin(); drawWinLoss(); drawAssists(); drawThrees(); drawPaint(); }
+function drawMadeAttempted() {
+  const el = document.getElementById('tpm-chart'); el.replaceChildren();
+  const rows = [{ label: 'Wins', made: tpmPer((g) => g.result === 'W'), att: shW.tpa, color: 'var(--c1)' }, { label: 'Losses', made: tpmPer((g) => g.result === 'L'), att: shL.tpa, color: 'var(--c2)' }];
+  const W = Math.max(280, el.clientWidth), narrow = W < 520, rowH = narrow ? 56 : 44, barH = 22, left = narrow ? 0 : 70;
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('height', rows.length * rowH + 6).attr('role', 'img').attr('aria-label', 'Three-pointers made out of attempted per game, in wins and losses');
+  const x = d3.scaleLinear().domain([0, Math.ceil(d3.max(rows, (r) => r.att) / 5) * 5]).range([left, W - (narrow ? 8 : 150)]);
+  const tip = tooltip(el);
+  rows.forEach((r, i) => {
+    const y0 = i * rowH + (narrow ? 20 : (rowH - barH) / 2);
+    svg.append('text').attr('class', 'rp-cat').attr('x', narrow ? 0 : left - 12).attr('y', narrow ? i * rowH + 13 : y0 + barH / 2 + 5).attr('text-anchor', narrow ? 'start' : 'end').text(r.label);
+    svg.append('rect').attr('x', x(0)).attr('y', y0).attr('width', x(r.att) - x(0)).attr('height', barH).attr('rx', 3).style('fill', 'var(--grid)').style('stroke', 'var(--axis)').style('stroke-width', 0.5);
+    svg.append('rect').attr('x', x(0)).attr('y', y0).attr('width', x(r.made) - x(0)).attr('height', barH).attr('rx', 3).style('fill', r.color)
+      .on('pointermove', (e) => tip.show(e, `Threes in ${r.label.toLowerCase()}`, `${fmt1(r.made)} made of ${fmt1(r.att)} attempted per game`)).on('pointerleave', () => tip.hide());
+    const txt = `${fmt1(r.made)} made of ${fmt1(r.att)}`;
+    if (narrow) svg.append('text').attr('class', 'rp-val').attr('x', narrow ? x(0) : 0).attr('y', i * rowH + 13).attr('dx', 60).text(txt);
+    else svg.append('text').attr('class', 'rp-val').attr('x', x(r.att) + 10).attr('y', y0 + barH / 2 + 4).text(txt);
+  });
+}
+
+function drawPlayoffs() {
+  const el = document.getElementById('po-chart'); el.replaceChildren();
+  const metrics = [{ name: 'Assists per game', rs: shRS.ast, po: shPO.ast, fmt: fmt1, max: 30 }, { name: '3P%', rs: shRS.pct, po: shPO.pct, fmt: pct1, max: 0.5 }];
+  const W = Math.max(280, el.clientWidth), H = 200, m = { t: 26, b: 40 };
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('height', H).attr('role', 'img').attr('aria-label', 'Assists per game and three-point percentage, regular season versus playoffs');
+  const panelW = Math.min(260, (W - 24) / 2), tip = tooltip(el);
+  metrics.forEach((mt, i) => {
+    const ox = i * (panelW + 24);
+    const x = d3.scaleBand().domain(['Regular season', 'Playoffs']).range([ox, ox + panelW]).padding(0.3);
+    const y = d3.scaleLinear().domain([0, mt.max]).range([H - m.b, m.t]);
+    [['Regular season', mt.rs, 'var(--c2)'], ['Playoffs', mt.po, 'var(--c1)']].forEach(([lab, v, col]) => {
+      svg.append('rect').attr('x', x(lab)).attr('width', x.bandwidth()).attr('y', y(v)).attr('height', y(0) - y(v)).attr('rx', 2).style('fill', col)
+        .on('pointermove', (e) => tip.show(e, `${mt.name}, ${lab.toLowerCase()}`, mt.fmt(v))).on('pointerleave', () => tip.hide());
+      svg.append('text').attr('class', 'rp-val').attr('text-anchor', 'middle').attr('x', x(lab) + x.bandwidth() / 2).attr('y', y(v) - 6).style('font-weight', '600').text(mt.fmt(v));
+      svg.append('text').attr('class', 'rp-axis-label').attr('text-anchor', 'middle').attr('x', x(lab) + x.bandwidth() / 2).attr('y', H - m.b + 16).text(lab === 'Regular season' ? 'Regular' : 'Playoffs');
+    });
+    svg.append('line').attr('x1', ox).attr('x2', ox + panelW).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--axis)');
+    svg.append('text').attr('class', 'rp-cat').attr('text-anchor', 'middle').attr('x', ox + panelW / 2).attr('y', H - 6).style('font-weight', '600').text(mt.name);
+  });
+}
+
+function drawAll() { drawBattle(); drawMargin(); drawWinLoss(); drawAssists(); drawThrees(); drawMadeAttempted(); drawPlayoffs(); drawPaint(); }
 drawAll();
 let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(drawAll, 150); });
 </script>
