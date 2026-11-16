@@ -66,6 +66,7 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--fo
 .rp-badge { display: inline-block; vertical-align: middle; margin-left: 6px; padding: 1px 8px; border-radius: 999px; border: 1px solid #b7791f; color: #b7791f; font-family: var(--font); font-size: 12px; font-weight: 600; }
 .rp-note-lead { font-size: 15px; color: var(--fg); }
 .rp-note-lead b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.rp-h3 { margin: 8px 0 0; font-size: 15px; font-weight: 600; color: var(--fg); }
 .rp-tablewrap { overflow-x: auto; }
 .rp-table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
 .rp-table th, .rp-table td { padding: 8px 12px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
@@ -132,6 +133,20 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--fo
     <p class="rp-note">Opponent figures cover the <span id="cov-opp">—</span> games where they were recorded, and the offensive/defensive split covers <span id="cov-split">—</span> of <span id="cov-all">—</span> games.</p>
   </section>
 
+  <section class="rp-sec" id="passing">
+    <h2>Passing and shot-making drove the wins</h2>
+    <p class="rp-note rp-note-lead">Riviera Prep averaged <b id="ast-w">—</b> assists in wins and <b id="ast-l">—</b> in losses, and made <b id="tp-w">—</b> of its threes in wins against <b id="tp-l">—</b> in losses.</p>
+    <h3 class="rp-h3">Assists, game by game</h3>
+    <div class="rp-keys"><span class="rp-key"><i class="rp-sw rp-sw-1"></i>Win</span><span class="rp-key"><i class="rp-sw rp-sw-2"></i>Loss</span></div>
+    <div class="rp-chart" id="ast-chart" style="min-height:280px"></div>
+    <p class="rp-note">With 20 or more assists, Riviera Prep went <b id="ast20-hi">—</b>. With fewer, <b id="ast20-lo">—</b>. The dashed line marks 20 assists.</p>
+    <h3 class="rp-h3">Three-point shooting in wins and losses</h3>
+    <div class="rp-chart" id="tp-chart" style="min-height:220px"></div>
+    <p class="rp-note">It took about the same number of threes either way (<b id="tpa-w">—</b> a game in wins, <b id="tpa-l">—</b> in losses). The difference was making them.</p>
+    <p class="rp-note">In <span id="po-n">—</span> playoff games, Riviera Prep averaged <b id="po-ast">—</b> assists and shot <b id="po-tp">—</b> from three.</p>
+    <p class="rp-note">Shooting figures cover <span id="sh-n">—</span> of <span id="sh-all">—</span> games; MaxPreps has no shooting line for the rest. Source: MaxPreps 2025-26 team stats.</p>
+  </section>
+
   <p class="rp-foot">Source: 2025-26 varsity box scores.</p>
 </main>
 
@@ -143,6 +158,9 @@ body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--fo
 <script>
 // DATA: one row per game (game number, W/L, phase, Riviera Prep and opponent rebounds). null = not recorded.
 const GAMES = [{"game":1,"result":"L","phase":"Regular season","reb":31,"oreb":7,"dreb":24,"opp_reb":48,"opp_oreb":17,"opp_dreb":31},{"game":2,"result":"L","phase":"Regular season","reb":37,"oreb":12,"dreb":25,"opp_reb":null,"opp_oreb":null,"opp_dreb":null},{"game":3,"result":"W","phase":"Regular season","reb":36,"oreb":null,"dreb":null,"opp_reb":23,"opp_oreb":null,"opp_dreb":null},{"game":4,"result":"W","phase":"Regular season","reb":34,"oreb":null,"dreb":null,"opp_reb":null,"opp_oreb":null,"opp_dreb":null},{"game":5,"result":"L","phase":"Regular season","reb":32,"oreb":null,"dreb":null,"opp_reb":32,"opp_oreb":15,"opp_dreb":17},{"game":6,"result":"W","phase":"Regular season","reb":27,"oreb":null,"dreb":null,"opp_reb":31,"opp_oreb":15,"opp_dreb":16},{"game":7,"result":"W","phase":"Regular season","reb":27,"oreb":10,"dreb":17,"opp_reb":null,"opp_oreb":null,"opp_dreb":null},{"game":8,"result":"W","phase":"Regular season","reb":25,"oreb":8,"dreb":17,"opp_reb":null,"opp_oreb":null,"opp_dreb":null},{"game":9,"result":"L","phase":"Regular season","reb":23,"oreb":7,"dreb":16,"opp_reb":38,"opp_oreb":13,"opp_dreb":25},{"game":10,"result":"L","phase":"Regular season","reb":20,"oreb":5,"dreb":15,"opp_reb":29,"opp_oreb":9,"opp_dreb":20},{"game":11,"result":"W","phase":"Regular season","reb":27,"oreb":6,"dreb":21,"opp_reb":null,"opp_oreb":null,"opp_dreb":null},{"game":12,"result":"W","phase":"Regular season","reb":30,"oreb":8,"dreb":22,"opp_reb":27,"opp_oreb":7,"opp_dreb":20},{"game":13,"result":"L","phase":"Regular season","reb":29,"oreb":7,"dreb":22,"opp_reb":36,"opp_oreb":10,"opp_dreb":26},{"game":14,"result":"W","phase":"Regular season","reb":32,"oreb":null,"dreb":null,"opp_reb":null,"opp_oreb":null,"opp_dreb":null},{"game":15,"result":"W","phase":"Regular season","reb":22,"oreb":5,"dreb":17,"opp_reb":24,"opp_oreb":null,"opp_dreb":null},{"game":16,"result":"W","phase":"Regular season","reb":27,"oreb":5,"dreb":22,"opp_reb":23,"opp_oreb":9,"opp_dreb":14},{"game":17,"result":"L","phase":"Regular season","reb":33,"oreb":7,"dreb":26,"opp_reb":29,"opp_oreb":11,"opp_dreb":18},{"game":18,"result":"L","phase":"Regular season","reb":29,"oreb":9,"dreb":20,"opp_reb":35,"opp_oreb":12,"opp_dreb":23},{"game":19,"result":"W","phase":"Regular season","reb":27,"oreb":3,"dreb":24,"opp_reb":24,"opp_oreb":6,"opp_dreb":18},{"game":20,"result":"W","phase":"Regular season","reb":54,"oreb":15,"dreb":39,"opp_reb":null,"opp_oreb":null,"opp_dreb":null},{"game":21,"result":"W","phase":"Regular season","reb":29,"oreb":null,"dreb":null,"opp_reb":21,"opp_oreb":9,"opp_dreb":12},{"game":22,"result":"L","phase":"Regular season","reb":31,"oreb":6,"dreb":25,"opp_reb":null,"opp_oreb":null,"opp_dreb":null},{"game":23,"result":"W","phase":"Regular season","reb":31,"oreb":7,"dreb":24,"opp_reb":31,"opp_oreb":null,"opp_dreb":null},{"game":24,"result":"W","phase":"Regular season","reb":44,"oreb":10,"dreb":34,"opp_reb":null,"opp_oreb":null,"opp_dreb":null},{"game":25,"result":"W","phase":"Playoffs","reb":34,"oreb":10,"dreb":24,"opp_reb":20,"opp_oreb":5,"opp_dreb":15},{"game":26,"result":"W","phase":"Playoffs","reb":57,"oreb":16,"dreb":41,"opp_reb":17,"opp_oreb":7,"opp_dreb":10},{"game":27,"result":"W","phase":"Playoffs","reb":53,"oreb":17,"dreb":36,"opp_reb":22,"opp_oreb":5,"opp_dreb":17},{"game":28,"result":"W","phase":"Playoffs","reb":44,"oreb":14,"dreb":30,"opp_reb":30,"opp_oreb":17,"opp_dreb":13},{"game":29,"result":"L","phase":"Playoffs","reb":37,"oreb":16,"dreb":21,"opp_reb":21,"opp_oreb":6,"opp_dreb":15}];
+
+// MaxPreps 2025-26 by game: assists, 3PM, 3PA (null = no shooting line entered).
+const SHOOT = [{"game":1,"result":"L","phase":"Regular season","ast":14,"tpm":6,"tpa":26},{"game":2,"result":"L","phase":"Regular season","ast":12,"tpm":5,"tpa":15},{"game":3,"result":"W","phase":"Regular season","ast":18,"tpm":null,"tpa":null},{"game":4,"result":"W","phase":"Regular season","ast":16,"tpm":null,"tpa":null},{"game":5,"result":"L","phase":"Regular season","ast":12,"tpm":null,"tpa":null},{"game":6,"result":"W","phase":"Regular season","ast":16,"tpm":null,"tpa":null},{"game":7,"result":"W","phase":"Regular season","ast":33,"tpm":2,"tpa":12},{"game":8,"result":"W","phase":"Regular season","ast":19,"tpm":8,"tpa":22},{"game":9,"result":"L","phase":"Regular season","ast":8,"tpm":6,"tpa":16},{"game":10,"result":"L","phase":"Regular season","ast":20,"tpm":9,"tpa":27},{"game":11,"result":"W","phase":"Regular season","ast":23,"tpm":5,"tpa":18},{"game":12,"result":"W","phase":"Regular season","ast":20,"tpm":4,"tpa":18},{"game":13,"result":"L","phase":"Regular season","ast":18,"tpm":6,"tpa":14},{"game":14,"result":"W","phase":"Regular season","ast":20,"tpm":null,"tpa":null},{"game":15,"result":"W","phase":"Regular season","ast":15,"tpm":4,"tpa":10},{"game":16,"result":"W","phase":"Regular season","ast":15,"tpm":5,"tpa":17},{"game":17,"result":"L","phase":"Regular season","ast":16,"tpm":8,"tpa":29},{"game":18,"result":"L","phase":"Regular season","ast":22,"tpm":7,"tpa":21},{"game":19,"result":"W","phase":"Regular season","ast":25,"tpm":10,"tpa":18},{"game":20,"result":"W","phase":"Regular season","ast":20,"tpm":19,"tpa":42},{"game":21,"result":"W","phase":"Regular season","ast":19,"tpm":null,"tpa":null},{"game":22,"result":"L","phase":"Regular season","ast":12,"tpm":8,"tpa":20},{"game":23,"result":"W","phase":"Regular season","ast":16,"tpm":6,"tpa":18},{"game":24,"result":"W","phase":"Regular season","ast":20,"tpm":18,"tpa":29},{"game":25,"result":"W","phase":"Playoffs","ast":18,"tpm":9,"tpa":20},{"game":26,"result":"W","phase":"Playoffs","ast":30,"tpm":7,"tpa":18},{"game":27,"result":"W","phase":"Playoffs","ast":28,"tpm":9,"tpa":23},{"game":28,"result":"W","phase":"Playoffs","ast":22,"tpm":5,"tpa":16},{"game":29,"result":"L","phase":"Playoffs","ast":19,"tpm":8,"tpa":25}];
 
 // SAMPLE paint touches per game (practice numbers, not tracked data). Replace with real counts when tracked.
 const PAINT = [{"game":1,"result":"L","phase":"Regular season","paint_touches":1},{"game":2,"result":"L","phase":"Regular season","paint_touches":3},{"game":3,"result":"W","phase":"Regular season","paint_touches":9},{"game":4,"result":"W","phase":"Regular season","paint_touches":6},{"game":5,"result":"L","phase":"Regular season","paint_touches":3},{"game":6,"result":"W","phase":"Regular season","paint_touches":11},{"game":7,"result":"W","phase":"Regular season","paint_touches":11},{"game":8,"result":"W","phase":"Regular season","paint_touches":5},{"game":9,"result":"L","phase":"Regular season","paint_touches":1},{"game":10,"result":"L","phase":"Regular season","paint_touches":1},{"game":11,"result":"W","phase":"Regular season","paint_touches":12},{"game":12,"result":"W","phase":"Regular season","paint_touches":8},{"game":13,"result":"L","phase":"Regular season","paint_touches":3},{"game":14,"result":"W","phase":"Regular season","paint_touches":6},{"game":15,"result":"W","phase":"Regular season","paint_touches":12},{"game":16,"result":"W","phase":"Regular season","paint_touches":10},{"game":17,"result":"L","phase":"Regular season","paint_touches":4},{"game":18,"result":"L","phase":"Regular season","paint_touches":2},{"game":19,"result":"W","phase":"Regular season","paint_touches":12},{"game":20,"result":"W","phase":"Regular season","paint_touches":7},{"game":21,"result":"W","phase":"Regular season","paint_touches":8},{"game":22,"result":"L","phase":"Regular season","paint_touches":4},{"game":23,"result":"W","phase":"Regular season","paint_touches":11},{"game":24,"result":"W","phase":"Regular season","paint_touches":8},{"game":25,"result":"W","phase":"Playoffs","paint_touches":11},{"game":26,"result":"W","phase":"Playoffs","paint_touches":9},{"game":27,"result":"W","phase":"Playoffs","paint_touches":9},{"game":28,"result":"W","phase":"Playoffs","paint_touches":8},{"game":29,"result":"L","phase":"Playoffs","paint_touches":4}];
@@ -175,12 +193,23 @@ const winloss = [['Wins', 'W'], ['Losses', 'L']].map(([outcome, code]) => { cons
 
 const paintSummary = [['Wins', 'W'], ['Losses', 'L']].map(([outcome, code]) => { const v = PAINT.filter((g) => g.result === code).map((g) => g.paint_touches); return { outcome, avg: v.reduce((s, x) => s + x, 0) / v.length, max: Math.max(...v) }; });
 
+const shWith = SHOOT.filter((g) => has(g.tpa));
+const shootBy = (keep) => { const all = SHOOT.filter(keep), s = shWith.filter(keep); const tpm = s.reduce((a, g) => a + g.tpm, 0), tpa = s.reduce((a, g) => a + g.tpa, 0); return { ast: all.reduce((a, g) => a + g.ast, 0) / all.length, pct: tpm / tpa, tpa: tpa / s.length, n: all.length }; };
+const shW = shootBy((g) => g.result === 'W'), shL = shootBy((g) => g.result === 'L'), shPO = shootBy((g) => g.phase === 'Playoffs');
+const rec = (rows) => { const w = rows.filter((g) => g.result === 'W').length; return `${w}–${rows.length - w}`; };
+const pct1 = (v) => `${(v * 100).toFixed(1)}%`;
+
 // ---------- numbers ----------
 setText('ahead-w', battle[0].wins); setText('ahead-l', battle[0].losses);
 setText('behind-w', battle[1].wins); setText('behind-l', battle[1].losses);
 setText('rec-w', wins); setText('rec-l', GAMES.length - wins);
 setText('reb', fmt1(splits[0].reb)); setText('opp-reb', fmt1(splits[0].opp_reb));
 setText('paint-w', fmt1(paintSummary[0].avg)); setText('paint-l', fmt1(paintSummary[1].avg)); setText('paint-lmax', paintSummary[1].max);
+setText('ast-w', fmt1(shW.ast)); setText('ast-l', fmt1(shL.ast)); setText('tp-w', pct1(shW.pct)); setText('tp-l', pct1(shL.pct));
+setText('ast20-hi', rec(SHOOT.filter((g) => g.ast >= 20))); setText('ast20-lo', rec(SHOOT.filter((g) => g.ast < 20)));
+setText('tpa-w', fmt1(shW.tpa)); setText('tpa-l', fmt1(shL.tpa));
+setText('po-n', shPO.n); setText('po-ast', fmt1(shPO.ast)); setText('po-tp', pct1(shPO.pct));
+setText('sh-n', shWith.length); setText('sh-all', SHOOT.length);
 setText('dreb-pct', rates.dreb); setText('oreb-pct', rates.oreb);
 setText('cov-opp', known.length); setText('cov-split', GAMES.filter((g) => has(g.oreb)).length); setText('cov-all', GAMES.length);
 const tbody = document.getElementById('splits-body');
@@ -298,7 +327,49 @@ function drawPaint() {
   svg.append('text').attr('class', 'rp-axis-label').attr('x', W - m.r).attr('y', H - 2).attr('text-anchor', 'end').text('Game number');
 }
 
-function drawAll() { drawBattle(); drawMargin(); drawWinLoss(); drawPaint(); }
+function drawAssists() {
+  const el = document.getElementById('ast-chart'); el.replaceChildren();
+  const LINE = 20, W = Math.max(280, el.clientWidth), H = 280, m = { t: 24, r: 8, b: 34, l: 30 };
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('height', H).attr('role', 'img').attr('aria-label', 'Assists in each game, wins and losses');
+  const x = d3.scaleBand().domain(SHOOT.map((r) => String(r.game))).range([m.l, W - m.r]).padding(0.2);
+  const y = d3.scaleLinear().domain([0, d3.max(SHOOT, (r) => r.ast)]).nice().range([H - m.b, m.t]);
+  svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(-(W - m.l - m.r))).call((g) => g.select('.domain').remove());
+  const tip = tooltip(el);
+  svg.append('g').selectAll('rect').data(SHOOT).join('rect')
+    .attr('x', (r) => x(String(r.game))).attr('width', x.bandwidth()).attr('y', (r) => y(r.ast)).attr('height', (r) => y(0) - y(r.ast))
+    .style('fill', (r) => (r.result === 'W' ? 'var(--c1)' : 'var(--c2)'))
+    .on('pointermove', (e, r) => tip.show(e, `Game ${r.game} · ${r.result === 'W' ? 'Win' : 'Loss'}`, `${r.ast} assists`)).on('pointerleave', () => tip.hide());
+  if (x.bandwidth() >= 16) {
+    svg.append('g').selectAll('text').data(SHOOT).join('text').attr('class', 'rp-val').attr('text-anchor', 'middle')
+      .attr('x', (r) => x(String(r.game)) + x.bandwidth() / 2).attr('y', (r) => y(r.ast) - 4).text((r) => r.ast);
+  }
+  svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(LINE)).attr('y2', y(LINE)).style('stroke', 'var(--muted)').style('stroke-dasharray', '5 4').style('stroke-width', 1.5);
+  svg.append('text').attr('class', 'rp-axis-label').attr('x', m.l + 4).attr('y', m.t - 10).text('Dashed line: 20 assists');
+  svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--axis)');
+  const every = x.bandwidth() < 12 ? 3 : x.bandwidth() < 18 ? 2 : 1;
+  svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).tickSize(0).tickPadding(8).tickValues(x.domain().filter((_, i) => i % every === 0))).call((g) => g.select('.domain').remove());
+  svg.append('text').attr('class', 'rp-axis-label').attr('x', W - m.r).attr('y', H - 2).attr('text-anchor', 'end').text('Game number');
+}
+
+function drawThrees() {
+  const el = document.getElementById('tp-chart'); el.replaceChildren();
+  const rows = [{ label: 'Wins', v: shW, color: 'var(--c1)' }, { label: 'Losses', v: shL, color: 'var(--c2)' }];
+  const W = Math.max(280, el.clientWidth), H = 220, m = { t: 26, r: 8, b: 44, l: 8 };
+  const svg = d3.select(el).append('svg').attr('width', '100%').attr('height', H).attr('role', 'img').attr('aria-label', 'Three-point percentage in wins and in losses');
+  const x = d3.scaleBand().domain(rows.map((r) => r.label)).range([m.l, Math.min(W - m.r, m.l + 360)]).padding(0.35);
+  const y = d3.scaleLinear().domain([0, 0.5]).range([H - m.b, m.t]);
+  const tip = tooltip(el);
+  rows.forEach((r) => {
+    svg.append('rect').attr('x', x(r.label)).attr('width', x.bandwidth()).attr('y', y(r.v.pct)).attr('height', y(0) - y(r.v.pct)).attr('rx', 2).style('fill', r.color)
+      .on('pointermove', (e) => tip.show(e, `3P% in ${r.label.toLowerCase()}`, `${pct1(r.v.pct)} on ${fmt1(r.v.tpa)} attempts a game`)).on('pointerleave', () => tip.hide());
+    svg.append('text').attr('class', 'rp-val').attr('text-anchor', 'middle').attr('x', x(r.label) + x.bandwidth() / 2).attr('y', y(r.v.pct) - 6).style('font-size', '14px').style('font-weight', '600').text(pct1(r.v.pct));
+    svg.append('text').attr('class', 'rp-cat').attr('text-anchor', 'middle').attr('x', x(r.label) + x.bandwidth() / 2).attr('y', H - 24).text(r.label);
+    svg.append('text').attr('class', 'rp-axis-label').attr('text-anchor', 'middle').attr('x', x(r.label) + x.bandwidth() / 2).attr('y', H - 6).text(`${fmt1(r.v.tpa)} attempts / game`);
+  });
+  svg.append('line').attr('x1', m.l).attr('x2', x.range()[1]).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--axis)');
+}
+
+function drawAll() { drawBattle(); drawMargin(); drawWinLoss(); drawAssists(); drawThrees(); drawPaint(); }
 drawAll();
 let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(drawAll, 150); });
 </script>
